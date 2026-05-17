@@ -1,0 +1,125 @@
+{
+  "circuit": "NE555 Astable Oscillator",
+  "description": "Classic 555 timer astable circuit. Produces a square wave at ~1.38 Hz with the default values. Frequency formula: f = 1.44 / ((R1 + 2*R2) * C1)",
+  "frequency_hz": 1.38,
+  "supply_voltage": "9V",
+  "components": [
+    {
+      "ref": "U1",
+      "symbol": "Timer:NE555",
+      "footprint": "Package_DIP:DIP-8_W7.62mm",
+      "value": "NE555",
+      "description": "Single precision timer IC",
+      "x": 30, "y": 25
+    },
+    {
+      "ref": "R1",
+      "symbol": "Device:R",
+      "footprint": "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal",
+      "value": "10k",
+      "description": "Timing resistor R_A (charge path)",
+      "x": 15, "y": 15
+    },
+    {
+      "ref": "R2",
+      "symbol": "Device:R",
+      "footprint": "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal",
+      "value": "47k",
+      "description": "Timing resistor R_B (charge+discharge path)",
+      "x": 15, "y": 25
+    },
+    {
+      "ref": "C1",
+      "symbol": "Device:C",
+      "footprint": "Capacitor_THT:C_Radial_D5.0mm_H11.0mm_P2.00mm",
+      "value": "10uF",
+      "description": "Timing capacitor (electrolytic, 16V or higher)",
+      "x": 15, "y": 35
+    },
+    {
+      "ref": "C2",
+      "symbol": "Device:C",
+      "footprint": "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm",
+      "value": "100nF",
+      "description": "Control voltage bypass capacitor (ceramic)",
+      "x": 45, "y": 30
+    },
+    {
+      "ref": "J1",
+      "symbol": "Connector:Conn_01x02_Pin",
+      "footprint": "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical",
+      "value": "PWR",
+      "description": "Power connector: Pin 1 = VCC (9V), Pin 2 = GND",
+      "x": 5, "y": 25
+    },
+    {
+      "ref": "J2",
+      "symbol": "Connector:Conn_01x02_Pin",
+      "footprint": "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical",
+      "value": "OUT",
+      "description": "Output connector: Pin 1 = Output, Pin 2 = GND",
+      "x": 55, "y": 25
+    }
+  ],
+  "nets": [
+    {
+      "name": "VCC",
+      "pins": ["U1-8", "U1-4", "R1-1", "J1-1"],
+      "description": "Positive supply (9V). Connects VCC, RST(enabled), and R_A top."
+    },
+    {
+      "name": "GND",
+      "pins": ["U1-1", "C1-2", "C2-2", "J1-2", "J2-2"],
+      "description": "Ground reference."
+    },
+    {
+      "name": "Net-TRIG-THRS",
+      "pins": ["U1-2", "U1-6", "C1-1"],
+      "description": "TRIG and THRS tied together with timing capacitor top plate."
+    },
+    {
+      "name": "Net-CV",
+      "pins": ["U1-5", "C2-1"],
+      "description": "Control voltage with 100nF bypass cap."
+    },
+    {
+      "name": "Net-DIS",
+      "pins": ["U1-7", "R2-1"],
+      "description": "DIS connected to R_B bottom for discharge path."
+    },
+    {
+      "name": "Net-R1R2",
+      "pins": ["R1-2", "R2-2"],
+      "description": "Junction of R_A and R_B (charge/discharge node)."
+    },
+    {
+      "name": "Net-OUT",
+      "pins": ["U1-3", "J2-1"],
+      "description": "Square wave output to connector."
+    }
+  ],
+  "board_size_mm": {"width": 60, "height": 50},
+  "pcb_variants": [
+    {
+      "name": "Doble Cara",
+      "description": "Tracks on both F.Cu and B.Cu. Simplest to route automatically.",
+      "routing_layers": ["F.Cu", "B.Cu"],
+      "copper_pour": null,
+      "gerbers_zip": "doble_cara_gerbers.zip"
+    },
+    {
+      "name": "Una Cara",
+      "description": "Tracks only on F.Cu. No vias. Simpler PCB, easier for DIY etching.",
+      "routing_layers": ["F.Cu"],
+      "copper_pour": null,
+      "gerbers_zip": "una_cara_gerbers.zip"
+    },
+    {
+      "name": "Una Cara + Copper Pour GND",
+      "description": "F.Cu tracks with a ground copper pour filling all unused areas.",
+      "routing_layers": ["F.Cu"],
+      "copper_pour": {"layer": "F.Cu", "net": "GND", "clearance": 0.3, "minWidth": 0.25},
+      "gerbers_zip": "copper_pour_gerbers.zip"
+    }
+  ]
+}
