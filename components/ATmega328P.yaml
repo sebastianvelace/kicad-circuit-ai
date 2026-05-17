@@ -1,0 +1,69 @@
+# ATmega328P — 8-bit AVR Microcontroller (Arduino Uno / Nano core)
+
+component:
+  name: ATmega328P
+  aliases: [ATmega328, ATMEGA328P, ATmega328P-PU, ATmega328P-AU]
+  package: DIP-28
+  category: microcontroller
+  datasheet: https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf
+
+pins:
+  1:
+    name: PC6/RESET
+    function: reset
+    type: input
+    must_not_be: [GND]
+    warn_if_floating: true
+    recommended: "10kΩ pull-up resistor to VCC; 100nF filter capacitor to GND"
+    notes: >
+      Active LOW reset. Must be pulled HIGH (to VCC via 10kΩ) for normal operation.
+      Leaving it floating causes random resets. Connecting to GND holds MCU in permanent reset.
+      For ISP programming, also add a 100nF cap to GND and connect to programmer RESET line.
+
+  7:
+    name: VCC
+    function: positive_supply
+    type: power_input
+    must_connect_to: VCC
+    must_not_be: [GND]
+    critical: true
+    recommended: "100nF bypass cap from VCC to GND near pin"
+    notes: "Digital supply voltage. Connect 100nF decoupling capacitor to GND near this pin."
+
+  8:
+    name: GND
+    function: ground
+    type: power_input
+    must_connect_to: GND
+    critical: true
+    notes: "Digital ground."
+
+  20:
+    name: AVCC
+    function: analog_supply
+    type: power_input
+    warn_if_floating: true
+    recommended: "Connect to VCC through a 10Ω resistor; add 100nF cap to GND"
+    notes: >
+      Analog supply voltage for the ADC. Even if you're not using the ADC, this pin
+      must be connected to VCC (with optional LC filter for better ADC accuracy).
+      Leaving it floating degrades ADC performance and can cause erratic behavior.
+
+  21:
+    name: AREF
+    function: analog_reference
+    type: input
+    optional: true
+    recommended: "100nF capacitor to GND if using external reference"
+    notes: >
+      Analog voltage reference for ADC. If using internal reference (AVCC or internal 1.1V),
+      connect 100nF to GND. If using external reference, connect to stable voltage source.
+      Never connect to a voltage higher than AVCC.
+
+  22:
+    name: GND
+    function: ground
+    type: power_input
+    must_connect_to: GND
+    critical: true
+    notes: "Analog ground. Connect to same ground as digital GND."

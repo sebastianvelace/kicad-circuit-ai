@@ -1,0 +1,120 @@
+# NE555 / LM555 — Single Precision Timer
+# Contributed by: Sebas Velandia
+# Origin: This component was the cause of a rejected PCB submission — 5 of 8 pins
+# were accidentally wired to GND. This YAML defines the rules that would have caught it.
+
+component:
+  name: NE555
+  aliases: [LM555, SA555, SE555, TLC555, NE555P, NE555N, NE555D, LM555CN, LM555CH]
+  package: DIP-8
+  category: timer
+  datasheet: https://www.ti.com/lit/ds/symlink/ne555.pdf
+
+pins:
+  1:
+    name: GND
+    function: ground
+    type: power_input
+    must_connect_to: GND
+    critical: true
+    notes: "Ground reference. Must connect to GND."
+
+  2:
+    name: TRIG
+    function: trigger_input
+    type: input
+    must_not_be: [VCC, GND]
+    warn_if_floating: true
+    notes: >
+      Trigger input. Active LOW — fires when voltage drops below 1/3 VCC.
+      In astable mode, connect to Pin 6 (THRS) and the timing capacitor.
+      Connecting directly to GND keeps the output permanently HIGH.
+      Connecting to VCC prevents triggering entirely.
+
+  3:
+    name: OUT
+    function: output
+    type: output
+    notes: "Output pin. Connect to your load (LED, relay driver, etc.)."
+
+  4:
+    name: RST
+    function: reset
+    type: input
+    must_not_be: [GND]
+    warn_if_floating: true
+    notes: >
+      Active LOW reset. When LOW, holds output LOW regardless of timing.
+      If you are not using the reset function, tie this pin to VCC.
+      Leaving it floating causes random resets from noise.
+      Connecting to GND holds the chip in permanent reset — circuit will not work.
+
+  5:
+    name: CV
+    function: control_voltage
+    type: input
+    warn_if_floating: true
+    recommended: "100nF bypass capacitor from CV to GND"
+    notes: >
+      Control voltage. Modifies the internal comparator thresholds.
+      If not used for voltage control, connect a 100nF capacitor from this pin to GND.
+      This suppresses noise and prevents frequency instability.
+      Connecting directly to GND or VCC disrupts the internal voltage divider.
+
+  6:
+    name: THRS
+    function: threshold
+    type: input
+    must_not_be: [VCC, GND]
+    warn_if_floating: true
+    notes: >
+      Threshold input. Resets the flip-flop when voltage exceeds 2/3 VCC.
+      In astable mode, connect to Pin 2 (TRIG) and the timing capacitor.
+      Connecting directly to the GND power rail prevents the output from ever
+      going LOW — the threshold comparator never trips. Connect to the timing
+      capacitor node instead (which charges up to 2/3 VCC). Connecting to VCC
+      holds the output permanently LOW.
+
+  7:
+    name: DIS
+    function: discharge
+    type: open_collector
+    must_not_be: [GND]
+    notes: >
+      Discharge pin. Open-collector output connected to internal transistor.
+      In astable mode, connect between timing resistors to the capacitor.
+      Do NOT connect directly to GND — the transistor will saturate constantly.
+
+  8:
+    name: VCC
+    function: positive_supply
+    type: power_input
+    must_connect_to: VCC
+    must_not_be: [GND]
+    critical: true
+    voltage_range: [4.5, 16]
+    notes: >
+      Positive supply voltage (4.5V to 16V). This is how the IC gets power.
+      Connecting this pin to GND is a critical error — the IC will receive no power,
+      the circuit will not work, and the IC may be damaged.
+
+common_configurations:
+  astable:
+    description: "Square wave oscillator — continuous output at fixed frequency"
+    required_connections:
+      - "pin_2 == pin_6 (TRIG connected to THRS)"
+      - "pin_4 == VCC (RST disabled)"
+      - "pin_7 → R_A → VCC and pin_7 → R_B → pin_6"
+      - "pin_6 → C_timing → GND"
+      - "pin_5 → 100nF → GND"
+    frequency_formula: "f = 1.44 / ((R_A + 2*R_B) * C)"
+
+  monostable:
+    description: "Single pulse of fixed duration on trigger"
+    required_connections:
+      - "pin_4 == VCC (RST disabled)"
+      - "pin_6 → C_timing → GND"
+      - "pin_7 → R_A → VCC"
+      - "pin_2 ← trigger (active LOW pulse)"
+      - "pin_5 → 100nF → GND"
+    pulse_formula: "t = 1.1 * R_A * C"

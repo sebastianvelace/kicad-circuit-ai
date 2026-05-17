@@ -1,0 +1,79 @@
+# LM741 — General Purpose Op-Amp
+
+component:
+  name: LM741
+  aliases: [uA741, UA741, MC1741, LM741CN, LM741CH, LM741CP]
+  package: DIP-8
+  category: op_amp
+  datasheet: https://www.ti.com/lit/ds/symlink/lm741.pdf
+
+pins:
+  1:
+    name: OFFSET_NULL_A
+    function: offset_null
+    type: input
+    optional: true
+    notes: >
+      Offset null adjustment. Connect a 10kΩ potentiometer between pins 1 and 5,
+      wiper to negative supply, to trim the output offset voltage. Leave floating if not needed.
+
+  2:
+    name: IN_MINUS
+    function: inverting_input
+    type: input
+    must_not_be: [VCC, GND]
+    warn_if_floating: true
+    notes: >
+      Inverting input (−). Connecting directly to VCC or GND saturates the output.
+      This pin requires a feedback network for proper amplifier operation.
+
+  3:
+    name: IN_PLUS
+    function: non_inverting_input
+    type: input
+    must_not_be: [VCC, GND]
+    warn_if_floating: true
+    notes: "Non-inverting input (+). Must have a defined input signal, not floating."
+
+  4:
+    name: V_MINUS
+    function: negative_supply
+    type: power_input
+    must_not_be: [GND, VCC]
+    critical: true
+    notes: >
+      Negative supply rail. Typically −5V to −15V for split-supply operation.
+      DO NOT connect to GND in a split-supply design — this eliminates half the output swing.
+      If using a single supply, consult the datasheet for the correct biasing approach.
+
+  5:
+    name: OFFSET_NULL_B
+    function: offset_null
+    type: input
+    optional: true
+    notes: "Second offset null pin. See pin 1."
+
+  6:
+    name: OUT
+    function: output
+    type: output
+    must_not_be: [VCC, GND]
+    notes: >
+      Output. Do not connect directly to supply rails — this will damage the IC.
+      Output swing is limited: typically ±(Vs − 1.5V) for split-supply operation.
+
+  7:
+    name: V_PLUS
+    function: positive_supply
+    type: power_input
+    must_connect_to: VCC
+    must_not_be: [GND]
+    critical: true
+    notes: "Positive supply rail. Typically +5V to +15V."
+
+  8:
+    name: NC
+    function: no_connect
+    type: no_connect
+    optional: true
+    notes: "No internal connection on DIP-8. Leave unconnected."

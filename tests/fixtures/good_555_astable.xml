@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- KiCad Netlist — Correct NE555 astable oscillator circuit
+     All pins correctly connected. This should produce zero errors.
+-->
+<export version="D">
+  <design>
+    <source>good_555_astable.kicad_sch</source>
+    <date>2024-01-01T00:00:00</date>
+    <tool>Eeschema 9.0</tool>
+  </design>
+  <components>
+    <comp ref="U1">
+      <value>NE555</value>
+      <libsource lib="Timer" part="NE555" description="Single Precision Timer"/>
+    </comp>
+    <comp ref="R1">
+      <value>10k</value>
+      <libsource lib="Device" part="R"/>
+    </comp>
+    <comp ref="R2">
+      <value>47k</value>
+      <libsource lib="Device" part="R"/>
+    </comp>
+    <comp ref="C1">
+      <value>10uF</value>
+      <libsource lib="Device" part="C"/>
+    </comp>
+    <comp ref="C2">
+      <value>100nF</value>
+      <libsource lib="Device" part="C"/>
+    </comp>
+  </components>
+  <nets>
+    <net code="1" name="GND">
+      <node ref="U1" pin="1" pinfunction="GND" pintype="power_in"/>
+      <node ref="C1" pin="2" pinfunction="~" pintype="passive"/>
+    </net>
+    <net code="2" name="VCC">
+      <node ref="U1" pin="8" pinfunction="VCC" pintype="power_in"/>
+      <node ref="U1" pin="4" pinfunction="RST" pintype="input"/>
+      <node ref="R1" pin="1" pinfunction="~" pintype="passive"/>
+    </net>
+    <!-- Trig and Thrs connected together (astable requirement) -->
+    <net code="3" name="Net-TRIG-THRS">
+      <node ref="U1" pin="2" pinfunction="TRIG" pintype="input"/>
+      <node ref="U1" pin="6" pinfunction="THRS" pintype="input"/>
+      <node ref="C1" pin="1" pinfunction="~" pintype="passive"/>
+    </net>
+    <net code="4" name="Net-U1-OUT">
+      <node ref="U1" pin="3" pinfunction="OUT" pintype="output"/>
+    </net>
+    <!-- CV with bypass cap -->
+    <net code="5" name="Net-CV-Bypass">
+      <node ref="U1" pin="5" pinfunction="CV" pintype="input"/>
+      <node ref="C2" pin="1" pinfunction="~" pintype="passive"/>
+    </net>
+    <net code="6" name="Net-U1-DIS">
+      <node ref="U1" pin="7" pinfunction="DIS" pintype="open_col"/>
+      <node ref="R2" pin="1" pinfunction="~" pintype="passive"/>
+    </net>
+    <net code="7" name="GND">
+      <node ref="C2" pin="2" pinfunction="~" pintype="passive"/>
+    </net>
+  </nets>
+</export>

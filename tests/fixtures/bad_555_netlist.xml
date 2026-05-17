@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- KiCad Netlist — Broken NE555 circuit (Practica-7 origin story)
+     5 of 8 NE555 pins incorrectly connected to GND.
+     This is the exact error that KiCad ERC/DRC did not catch.
+     Used as the primary test fixture for kicad-circuit-ai.
+-->
+<export version="D">
+  <design>
+    <source>bad_555.kicad_sch</source>
+    <date>2024-01-01T00:00:00</date>
+    <tool>Eeschema 9.0</tool>
+    <sheet number="1" name="/" tstamps="/"/>
+  </design>
+  <components>
+    <comp ref="U1">
+      <value>NE555</value>
+      <datasheet>https://www.ti.com/lit/ds/symlink/ne555.pdf</datasheet>
+      <libsource lib="Timer" part="NE555" description="Single Precision Timer"/>
+      <property name="Reference" value="U1"/>
+      <property name="Value" value="NE555"/>
+    </comp>
+    <comp ref="R1">
+      <value>10k</value>
+      <libsource lib="Device" part="R" description="Resistor"/>
+    </comp>
+    <comp ref="C1">
+      <value>100nF</value>
+      <libsource lib="Device" part="C" description="Capacitor"/>
+    </comp>
+  </components>
+  <nets>
+    <!-- Net GND — the problem: 6 pins end up here including VCC and control pins -->
+    <net code="1" name="GND">
+      <node ref="U1" pin="1" pinfunction="GND" pintype="power_in"/>
+      <node ref="U1" pin="2" pinfunction="TRIG" pintype="input"/>
+      <node ref="U1" pin="4" pinfunction="RST" pintype="input"/>
+      <node ref="U1" pin="5" pinfunction="CV" pintype="input"/>
+      <node ref="U1" pin="6" pinfunction="THRS" pintype="input"/>
+      <node ref="U1" pin="8" pinfunction="VCC" pintype="power_in"/>
+    </net>
+    <!-- Net OUT — pin 3 is the output, OK -->
+    <net code="2" name="Net-(U1-OUT)">
+      <node ref="U1" pin="3" pinfunction="OUT" pintype="output"/>
+    </net>
+    <!-- Net DIS — pin 7, OK -->
+    <net code="3" name="Net-(U1-DIS)">
+      <node ref="U1" pin="7" pinfunction="DIS" pintype="open_col"/>
+      <node ref="R1" pin="1" pinfunction="~" pintype="passive"/>
+    </net>
+    <net code="4" name="VCC">
+      <node ref="R1" pin="2" pinfunction="~" pintype="passive"/>
+    </net>
+    <net code="5" name="Net-(C1-Pad1)">
+      <node ref="C1" pin="1" pinfunction="~" pintype="passive"/>
+    </net>
+  </nets>
+</export>

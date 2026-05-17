@@ -1,0 +1,50 @@
+# LM7805 — 5V Positive Voltage Regulator (78xx series)
+
+component:
+  name: LM7805
+  aliases: [LM7805CT, LM7805AT, UA7805, MC7805, L7805, KA7805, LM7805CV]
+  package: TO-220
+  category: voltage_regulator
+  datasheet: https://www.ti.com/lit/ds/symlink/lm7805.pdf
+
+pins:
+  1:
+    name: IN
+    function: input
+    type: power_input
+    must_not_be: [GND]
+    warn_if_floating: true
+    critical: true
+    notes: >
+      Input voltage. Must be at least 7V (2V higher than output) for proper regulation.
+      Connect a 0.33µF ceramic capacitor from IN to GND near the device.
+      If the input voltage is less than ~7V, the output will be unregulated (lower than 5V).
+
+  2:
+    name: GND
+    function: ground
+    type: power_input
+    must_connect_to: GND
+    critical: true
+    notes: "Common ground. Connect directly to the circuit ground plane."
+
+  3:
+    name: OUT
+    function: output
+    type: power_output
+    must_not_be: [GND, VCC]
+    notes: >
+      Regulated 5V output. Connect a 0.1µF ceramic capacitor from OUT to GND near the device.
+      This improves transient response and prevents oscillation.
+      Do not connect OUT directly to IN (no regulation) or GND (short circuit).
+
+recommended_external:
+  input_bypass: "0.33µF ceramic capacitor from IN to GND, placed close to the IC"
+  output_bypass: "0.1µF ceramic capacitor from OUT to GND, placed close to the IC"
+  heatsink: "Required for currents above ~500mA — check Pd_max in datasheet"
+
+common_mistakes:
+  - "Input voltage too low: Vin must be at least Vout + 2V (so >7V for LM7805)"
+  - "Missing input/output bypass capacitors cause oscillation"
+  - "No heatsink at high current — IC overheats and enters thermal shutdown"
+  - "Reverse polarity on input will destroy the regulator"

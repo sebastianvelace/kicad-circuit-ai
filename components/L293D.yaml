@@ -1,0 +1,132 @@
+# L293D — Quadruple Half-H Driver (DC Motor Driver)
+
+component:
+  name: L293D
+  aliases: [L293, SN754410, L293B, L293E]
+  package: DIP-16
+  category: motor_driver
+  datasheet: https://www.ti.com/lit/ds/symlink/l293d.pdf
+
+pins:
+  1:
+    name: EN1_2
+    function: enable
+    type: input
+    must_not_be: [GND]
+    warn_if_floating: true
+    notes: >
+      Enable for channels 1 and 2. HIGH = channels enabled, LOW = channels disabled (motor freewheels).
+      Connecting to GND disables both channels permanently — motor will not move.
+      Leaving floating causes erratic behavior. Tie to VCC if always-on, or use PWM for speed control.
+
+  2:
+    name: IN1
+    function: input
+    type: input
+    warn_if_floating: true
+    notes: "Direction input for channel 1. HIGH/LOW determines motor direction."
+
+  3:
+    name: OUT1
+    function: output
+    type: output
+    notes: "Output for channel 1. Connect to one motor terminal."
+
+  4:
+    name: GND
+    function: ground
+    type: power_input
+    must_connect_to: GND
+    critical: true
+    notes: "Ground. Must connect to circuit GND."
+
+  5:
+    name: GND
+    function: ground
+    type: power_input
+    must_connect_to: GND
+    notes: "Ground (second GND pin — connect both)."
+
+  6:
+    name: OUT2
+    function: output
+    type: output
+    notes: "Output for channel 2. Connect to other motor terminal."
+
+  7:
+    name: IN2
+    function: input
+    type: input
+    warn_if_floating: true
+    notes: "Direction input for channel 2."
+
+  8:
+    name: VSS
+    function: motor_supply
+    type: power_input
+    must_not_be: [GND]
+    critical: true
+    notes: >
+      Motor supply voltage (4.5V to 36V). This powers the motor(s), NOT the logic.
+      Must be a separate supply or at minimum 4.5V. Connecting to GND: no power to motors.
+      Add a 100µF electrolytic cap from VSS to GND for motor transient suppression.
+
+  9:
+    name: EN3_4
+    function: enable
+    type: input
+    must_not_be: [GND]
+    warn_if_floating: true
+    notes: "Enable for channels 3 and 4. Same rules as EN1_2 (pin 1)."
+
+  10:
+    name: IN3
+    function: input
+    type: input
+    warn_if_floating: true
+    notes: "Direction input for channel 3."
+
+  11:
+    name: OUT3
+    function: output
+    type: output
+    notes: "Output for channel 3."
+
+  12:
+    name: GND
+    function: ground
+    type: power_input
+    must_connect_to: GND
+    notes: "Ground (third GND pin)."
+
+  13:
+    name: GND
+    function: ground
+    type: power_input
+    must_connect_to: GND
+    notes: "Ground (fourth GND pin — connect all four GND pins)."
+
+  14:
+    name: OUT4
+    function: output
+    type: output
+    notes: "Output for channel 4."
+
+  15:
+    name: IN4
+    function: input
+    type: input
+    warn_if_floating: true
+    notes: "Direction input for channel 4."
+
+  16:
+    name: VCC
+    function: logic_supply
+    type: power_input
+    must_connect_to: VCC
+    must_not_be: [GND]
+    critical: true
+    notes: >
+      Logic supply (4.5V to 7V). Powers the internal logic only, not the motors.
+      Must be connected even if motors use a different supply voltage (VSS, pin 8).
+      Add a 100nF decoupling capacitor from VCC to GND near this pin.
