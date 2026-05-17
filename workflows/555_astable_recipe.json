@@ -1,8 +1,9 @@
 {
   "circuit": "NE555 Astable Oscillator",
-  "description": "Classic 555 timer astable circuit. Produces a square wave at ~1.38 Hz with the default values. Frequency formula: f = 1.44 / ((R1 + 2*R2) * C1)",
-  "frequency_hz": 1.38,
-  "supply_voltage": "9V",
+  "description": "555 astable con potenciómetro para ajuste de frecuencia. R_pot (VCC→DIS), R1 (DIS→THRS/TRIG), C1=100nF (timing), C2 (bypass CV). Práctica 6 UNAL.",
+  "supply_voltage": "Vcc",
+  "frequency_formula": "f = 1.44 / ((R_pot + 2*R1) * C1)",
+  "notes": "R_pot es un potenciómetro — permite ajustar la frecuencia. RST (pin 4) va a VCC para mantener el chip activo.",
   "components": [
     {
       "ref": "U1",
@@ -13,43 +14,43 @@
       "x": 30, "y": 25
     },
     {
+      "ref": "RV1",
+      "symbol": "Device:R_POT",
+      "footprint": "Potentiometer_THT:Potentiometer_Bourns_3386P_Vertical",
+      "value": "100k",
+      "description": "Potenciómetro R_A: ajusta frecuencia. Conectar pin 1 a VCC, pin 3 a DIS (pin 7 del NE555). Usar solo pines 1 y 3 (no el wiper).",
+      "x": 50, "y": 12
+    },
+    {
       "ref": "R1",
       "symbol": "Device:R",
       "footprint": "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal",
       "value": "10k",
-      "description": "Timing resistor R_A (charge path)",
-      "x": 15, "y": 15
-    },
-    {
-      "ref": "R2",
-      "symbol": "Device:R",
-      "footprint": "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal",
-      "value": "47k",
-      "description": "Timing resistor R_B (charge+discharge path)",
-      "x": 15, "y": 25
+      "description": "Resistor R_B (discharge path). Entre DIS (pin 7) y THRS/TRIG (pines 6/2).",
+      "x": 50, "y": 25
     },
     {
       "ref": "C1",
       "symbol": "Device:C",
-      "footprint": "Capacitor_THT:C_Radial_D5.0mm_H11.0mm_P2.00mm",
-      "value": "10uF",
-      "description": "Timing capacitor (electrolytic, 16V or higher)",
-      "x": 15, "y": 35
+      "footprint": "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm",
+      "value": "100nF",
+      "description": "Capacitor de temporización. Entre el nodo TRIG/THRS y GND.",
+      "x": 20, "y": 35
     },
     {
       "ref": "C2",
       "symbol": "Device:C",
       "footprint": "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm",
-      "value": "100nF",
-      "description": "Control voltage bypass capacitor (ceramic)",
-      "x": 45, "y": 30
+      "value": "10nF",
+      "description": "Bypass capacitor en pin 5 (CV). Entre CV y GND para estabilidad.",
+      "x": 40, "y": 38
     },
     {
       "ref": "J1",
       "symbol": "Connector:Conn_01x02_Pin",
       "footprint": "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical",
-      "value": "PWR",
-      "description": "Power connector: Pin 1 = VCC (9V), Pin 2 = GND",
+      "value": "VCC-GND",
+      "description": "Conector de alimentación: Pin 1 = VCC, Pin 2 = GND",
       "x": 5, "y": 25
     },
     {
@@ -57,69 +58,67 @@
       "symbol": "Connector:Conn_01x02_Pin",
       "footprint": "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical",
       "value": "OUT",
-      "description": "Output connector: Pin 1 = Output, Pin 2 = GND",
-      "x": 55, "y": 25
+      "description": "Conector de salida: Pin 1 = OUT, Pin 2 = GND",
+      "x": 5, "y": 35
     }
   ],
   "nets": [
     {
       "name": "VCC",
-      "pins": ["U1-8", "U1-4", "R1-1", "J1-1"],
-      "description": "Positive supply (9V). Connects VCC, RST(enabled), and R_A top."
+      "pins": ["U1-8", "U1-4", "RV1-1", "J1-1"],
+      "description": "Alimentación positiva. VCC, RST (habilitado), y terminal superior del potenciómetro."
     },
     {
       "name": "GND",
       "pins": ["U1-1", "C1-2", "C2-2", "J1-2", "J2-2"],
-      "description": "Ground reference."
+      "description": "Referencia de tierra."
     },
     {
       "name": "Net-TRIG-THRS",
-      "pins": ["U1-2", "U1-6", "C1-1"],
-      "description": "TRIG and THRS tied together with timing capacitor top plate."
+      "pins": ["U1-2", "U1-6", "C1-1", "R1-2"],
+      "description": "TRIG y THRS unidos. Placa superior del capacitor de temporización y resistor R_B."
+    },
+    {
+      "name": "Net-DIS",
+      "pins": ["U1-7", "RV1-3", "R1-1"],
+      "description": "DIS conectado al terminal inferior del potenciómetro y R_B superior."
     },
     {
       "name": "Net-CV",
       "pins": ["U1-5", "C2-1"],
-      "description": "Control voltage with 100nF bypass cap."
-    },
-    {
-      "name": "Net-DIS",
-      "pins": ["U1-7", "R2-1"],
-      "description": "DIS connected to R_B bottom for discharge path."
-    },
-    {
-      "name": "Net-R1R2",
-      "pins": ["R1-2", "R2-2"],
-      "description": "Junction of R_A and R_B (charge/discharge node)."
+      "description": "Voltaje de control con capacitor de bypass."
     },
     {
       "name": "Net-OUT",
       "pins": ["U1-3", "J2-1"],
-      "description": "Square wave output to connector."
+      "description": "Salida de onda cuadrada al conector."
     }
   ],
-  "board_size_mm": {"width": 60, "height": 50},
+  "board_size_mm": {"width": 65, "height": 55},
   "pcb_variants": [
     {
       "name": "Doble Cara",
-      "description": "Tracks on both F.Cu and B.Cu. Simplest to route automatically.",
+      "description": "Pistas en F.Cu y B.Cu. El autorouter usa ambas capas y vías.",
       "routing_layers": ["F.Cu", "B.Cu"],
       "copper_pour": null,
-      "gerbers_zip": "doble_cara_gerbers.zip"
+      "gerbers_zip": "doble_cara_gerbers.zip",
+      "image": "doble_cara.png"
     },
     {
       "name": "Una Cara",
-      "description": "Tracks only on F.Cu. No vias. Simpler PCB, easier for DIY etching.",
+      "description": "Pistas solo en F.Cu. Sin vías. Más fácil de fabricar artesanalmente.",
       "routing_layers": ["F.Cu"],
       "copper_pour": null,
-      "gerbers_zip": "una_cara_gerbers.zip"
+      "gerbers_zip": "una_cara_gerbers.zip",
+      "image": "una_cara.png"
     },
     {
       "name": "Una Cara + Copper Pour GND",
-      "description": "F.Cu tracks with a ground copper pour filling all unused areas.",
+      "description": "F.Cu con vertido de cobre para tierra en todas las áreas libres.",
       "routing_layers": ["F.Cu"],
       "copper_pour": {"layer": "F.Cu", "net": "GND", "clearance": 0.3, "minWidth": 0.25},
-      "gerbers_zip": "copper_pour_gerbers.zip"
+      "gerbers_zip": "copper_pour_gerbers.zip",
+      "image": "copper_pour.png"
     }
   ]
 }
