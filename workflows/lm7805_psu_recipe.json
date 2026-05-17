@@ -1,0 +1,152 @@
+{
+  "circuit": "LM7805 Regulated 5V PSU",
+  "description": "Fuente regulada 5V con LM7805. Diodo 1N4001 en serie en la entrada para protección de polaridad inversa. C1/C3 en la entrada y C2/C4 en la salida. LED indicador de alimentación con R1 1k.",
+  "supply_voltage": "VIN (≥7 V DC típico)",
+  "notes": "VIN en J1 debe superar ~7V para regulación estable. Referencia de tierra común en J1-2 y J2-2.",
+  "components": [
+    {
+      "ref": "U1",
+      "symbol": "Regulator_Linear:LM7805",
+      "footprint": "Package_TO_SOT_THT:TO-220-3_Vertical",
+      "value": "LM7805",
+      "description": "Regulador lineal +5V TO-220",
+      "x": 35,
+      "y": 28
+    },
+    {
+      "ref": "C1",
+      "symbol": "Device:C",
+      "footprint": "Capacitor_THT:CP_Radial_D8.0mm_P3.50mm",
+      "value": "100µF",
+      "description": "Bulk electrolítico en la entrada (después del diodo)",
+      "x": 15,
+      "y": 20
+    },
+    {
+      "ref": "C2",
+      "symbol": "Device:C",
+      "footprint": "Capacitor_THT:CP_Radial_D5.0mm_P2.50mm",
+      "value": "10µF",
+      "description": "Bulk electrolítico en la salida",
+      "x": 48,
+      "y": 20
+    },
+    {
+      "ref": "C3",
+      "symbol": "Device:C",
+      "footprint": "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm",
+      "value": "100nF",
+      "description": "Cerámico de bypass en la entrada, cerca del regulador",
+      "x": 28,
+      "y": 15
+    },
+    {
+      "ref": "C4",
+      "symbol": "Device:C",
+      "footprint": "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm",
+      "value": "100nF",
+      "description": "Cerámico de bypass en la salida",
+      "x": 48,
+      "y": 15
+    },
+    {
+      "ref": "D1",
+      "symbol": "Diode:1N4001",
+      "footprint": "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal",
+      "value": "1N4001",
+      "description": "Protección de polaridad inversa en serie con la entrada",
+      "x": 8,
+      "y": 28
+    },
+    {
+      "ref": "LED1",
+      "symbol": "Device:LED",
+      "footprint": "LED_THT:LED_D5.0mm",
+      "value": "LED",
+      "description": "Indicador de salida +5V",
+      "x": 52,
+      "y": 38
+    },
+    {
+      "ref": "R1",
+      "symbol": "Device:R",
+      "footprint": "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal",
+      "value": "1k",
+      "description": "Limitador de corriente del LED",
+      "x": 38,
+      "y": 38
+    },
+    {
+      "ref": "J1",
+      "symbol": "Connector:Conn_01x02_Pin",
+      "footprint": "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical",
+      "value": "VIN-GND",
+      "description": "Entrada: Pin1=VIN+, Pin2=GND",
+      "x": 3,
+      "y": 28
+    },
+    {
+      "ref": "J2",
+      "symbol": "Connector:Conn_01x02_Pin",
+      "footprint": "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical",
+      "value": "VOUT-GND",
+      "description": "Salida +5V: Pin1=+5V, Pin2=GND",
+      "x": 58,
+      "y": 28
+    }
+  ],
+  "nets": [
+    {
+      "name": "VIN_IN",
+      "pins": ["J1-1", "D1-2"],
+      "description": "VIN positivo hacia ánodo del diodo (KiCad 1N4001: pin 2 = ánodo)"
+    },
+    {
+      "name": "VIN_REG",
+      "pins": ["D1-1", "U1-1", "C1-1", "C3-1"],
+      "description": "Entrada al regulador (cátodo del diodo, bulk y bypass)"
+    },
+    {
+      "name": "GND",
+      "pins": ["J1-2", "J2-2", "U1-2", "C1-2", "C2-2", "C3-2", "C4-2", "LED1-1"],
+      "description": "Tierra común"
+    },
+    {
+      "name": "VOUT",
+      "pins": ["U1-3", "C2-1", "C4-1", "J2-1", "R1-1"],
+      "description": "Salida regulada +5V"
+    },
+    {
+      "name": "Net-LED",
+      "pins": ["R1-2", "LED1-2"],
+      "description": "Nodo entre resistor y ánodo del LED (pin 2 = ánodo en Device:LED)"
+    }
+  ],
+  "board_size_mm": { "width": 65, "height": 50 },
+  "pcb_variants": [
+    {
+      "name": "Doble Cara",
+      "description": "Pistas en F.Cu y B.Cu. El autorouter usa ambas capas y vías.",
+      "routing_layers": ["F.Cu", "B.Cu"],
+      "copper_pour": null,
+      "gerbers_zip": "doble_cara_gerbers.zip",
+      "image": "doble_cara.png"
+    },
+    {
+      "name": "Una Cara",
+      "description": "Pistas solo en F.Cu. Sin vías. Más fácil de fabricar artesanalmente.",
+      "routing_layers": ["F.Cu"],
+      "copper_pour": null,
+      "gerbers_zip": "una_cara_gerbers.zip",
+      "image": "una_cara.png"
+    },
+    {
+      "name": "Una Cara + Copper Pour GND",
+      "description": "F.Cu con vertido de cobre para tierra en todas las áreas libres.",
+      "routing_layers": ["F.Cu"],
+      "copper_pour": { "layer": "F.Cu", "net": "GND", "clearance": 0.3, "minWidth": 0.25 },
+      "gerbers_zip": "copper_pour_gerbers.zip",
+      "image": "copper_pour.png"
+    }
+  ]
+}

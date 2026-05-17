@@ -9,6 +9,10 @@ Tools:
   - restrict_dsn_to_single_layer: modify DSN for single-side Freerouting
   - parse_circuit_from_description: image description → structured recipe JSON
   - get_pcb_workflow_recipe: return a pre-defined circuit recipe by name
+  - list_available_templates: list saved KiCad project templates
+  - copy_template_project: copy a template to a working directory
+  - save_project_as_template: save a completed project as a template
+  - generate_bom_from_recipe: BOM from recipe JSON (csv / json / markdown)
 """
 
 import os
@@ -103,6 +107,12 @@ def _create_server():
         parse_circuit_from_description as _parse_circuit,
         get_pcb_workflow_recipe as _get_recipe,
     )
+    from kicad_circuit_ai.tools.bom import generate_bom_from_recipe as _generate_bom
+    from kicad_circuit_ai.tools.template_manager import (
+        copy_template_project as _copy_template,
+        save_project_as_template as _save_template,
+        list_available_templates as _list_templates,
+    )
 
     @mcp.tool()
     def zip_gerbers(folder_path: str, output_zip: str = "") -> str:
@@ -169,12 +179,83 @@ def _create_server():
 
         Args:
             circuit_type: Circuit name. Examples: "555_astable", "555 astable",
-                          "555_monostable", "555 monostable".
+                          "555_monostable", "555 monostable", "lm7805_psu", "lm7805".
 
         Returns:
             JSON string with the full recipe, or an error listing available recipes.
         """
         return _get_recipe(circuit_type)
+
+    @mcp.tool()
+    def generate_bom_from_recipe(recipe_json: str, output_format: str = "csv") -> str:
+        """Generate a Bill of Materials from a circuit recipe JSON string.
+
+        Pass the JSON returned by get_pcb_workflow_recipe() or parse_circuit_from_description().
+        Includes suggested LCSC part numbers for common passives and ICs.
+
+        Args:
+            recipe_json: Full recipe as a JSON string.
+            output_format: ``csv`` (default), ``json``, or ``markdown`` (GitHub-flavored table).
+
+        Returns:
+            BOM text, or an error message if JSON is invalid.
+        """
+        return _generate_bom(recipe_json, output_format)
+
+    @mcp.tool()
+    def list_available_templates() -> str:
+        """List available pre-built KiCad project templates.
+
+        Call this FIRST before any PCB workflow to check if a fast path exists.
+        If a template is available, use copy_template_project() to skip schematic
+        building and component placement — go straight to open_project() + autoroute().
+
+        Returns:
+            JSON with {"templates": [...]} listing names usable with copy_template_project().
+        """
+        return _list_templates()
+
+    @mcp.tool()
+    def copy_template_project(circuit_type: str, dest_dir: str) -> str:
+        """Copy a pre-built KiCad project template to a working directory.
+
+        Fast path: skips create_project, add_schematic_component, add_wire,
+        annotate_schematic, sync_schematic_to_board, and place_component.
+        Go straight to open_project() then autoroute().
+
+        Args:
+            circuit_type: Template name (e.g., "555_astable").
+                          Call list_available_templates() to see options.
+            dest_dir: Directory where the project copy will be created.
+
+        Returns:
+            JSON with project_path, schematic_path, board_path ready for open_project().
+        """
+        try:
+            return _copy_template(circuit_type, dest_dir)
+        except Exception as e:
+            return f"Error: {e}"
+
+    @mcp.tool()
+    def save_project_as_template(project_path: str, circuit_type: str) -> str:
+        """Save a completed KiCad project as a reusable template for future runs.
+
+        Call this ONCE after the first successful full PCB workflow (slow path).
+        Saves the .kicad_pro + .kicad_sch + .kicad_pcb files as a template.
+        Future runs call copy_template_project() instead of rebuilding from scratch,
+        reducing tool calls by ~60%.
+
+        Args:
+            project_path: Path to the .kicad_pro file of the completed project.
+            circuit_type: Template name to use (e.g., "555_astable").
+
+        Returns:
+            JSON with status, template_dir, and list of saved files.
+        """
+        try:
+            return _save_template(project_path, circuit_type)
+        except Exception as e:
+            return f"Error: {e}"
 
     return mcp
 

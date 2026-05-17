@@ -1,5 +1,11 @@
 # kicad-circuit-ai
 
+[![CI](https://github.com/sebasvelace/kicad-circuit-ai/workflows/CI/badge.svg)](https://github.com/sebasvelace/kicad-circuit-ai/actions/workflows/ci.yml)
+[![Codecov](https://codecov.io/gh/sebasvelace/kicad-circuit-ai/branch/main/graph/badge.svg)](https://codecov.io/gh/sebasvelace/kicad-circuit-ai)
+[![PyPI](https://img.shields.io/pypi/v/kicad-circuit-ai.svg)](https://pypi.org/project/kicad-circuit-ai/)
+![Python](https://img.shields.io/badge/python-3.11%2B-blue)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 **Circuit Intelligence Layer for KiCad** — an MCP server that detects logic errors that KiCad ERC/DRC cannot see.
 
 > My professor rejected my PCB. An AI diagnosed that 5 pins of my NE555 were shorted to ground. KiCad never warned me.

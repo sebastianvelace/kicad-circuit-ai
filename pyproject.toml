@@ -1,12 +1,17 @@
 [project]
 name = "kicad-circuit-ai"
-version = "0.1.0"
+version = "0.3.0"
 description = "Circuit Intelligence Layer for KiCad — detects logic errors that ERC/DRC cannot"
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.11"
 authors = [{ name = "Sebas Velandia", email = "sebastianvelace@gmail.com" }]
 keywords = ["kicad", "mcp", "pcb", "electronics", "circuit-validation", "ai"]
+
+[project.urls]
+Repository = "https://github.com/sebasvelace/kicad-circuit-ai"
+Documentation = "https://github.com/sebasvelace/kicad-circuit-ai/docs"
+"Bug-Tracker" = "https://github.com/sebasvelace/kicad-circuit-ai/issues"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Education",

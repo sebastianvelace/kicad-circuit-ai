@@ -201,6 +201,38 @@ def test_get_recipe_unknown_lists_available():
     data = json.loads(result)
     assert "error" in data
     assert "available_recipes" in data
+    names = data["available_recipes"]
+    assert "555_astable" in names
+    assert "555_monostable" in names
+    assert "lm7805_psu" in names
+
+
+def test_parse_555_monostable_detected():
+    result = parse_circuit_from_description("NE555 monostable timer 47k 10uF")
+    data = json.loads(result)
+    assert data.get("_matched_from") == "555_monostable"
+    assert len(data.get("pcb_variants", [])) == 3
+
+
+def test_parse_lm7805_detected():
+    result = parse_circuit_from_description("simple lm7805 5V regulator board")
+    data = json.loads(result)
+    assert data.get("_matched_from") == "lm7805_psu"
+
+
+def test_get_recipe_monostable():
+    result = get_pcb_workflow_recipe("555_monostable")
+    data = json.loads(result)
+    assert data["circuit"].startswith("NE555 Monostable")
+    u1 = next(c for c in data["components"] if c["ref"] == "U1")
+    assert "NE555" in u1["value"]
+
+
+def test_get_recipe_lm7805():
+    result = get_pcb_workflow_recipe("lm7805_psu")
+    data = json.loads(result)
+    assert "LM7805" in data["circuit"]
+    assert any(c["ref"] == "U1" and "7805" in c["value"] for c in data["components"])
 
 
 def test_get_recipe_has_three_variants():

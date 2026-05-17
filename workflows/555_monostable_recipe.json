@@ -1,0 +1,131 @@
+{
+  "circuit": "NE555 Monostable (One-Shot)",
+  "description": "Temporizador monostable con NE555. Disparo por flanco en TRIG (pin 2). R1=47k, C1=10µF de temporización. C2 bypass en CV (pin 5). J2: Pin1=TRIG, Pin2=GND (retorno).",
+  "supply_voltage": "Vcc",
+  "pulse_width_formula": "t = 1.1 * R * C ≈ 0.517 s (con R=47k, C=10µF)",
+  "notes": "U1 pin 4 (RST) va a VCC con alimentación. Pin 7 (DIS) se une con THRS y la red RC de temporización.",
+  "components": [
+    {
+      "ref": "U1",
+      "symbol": "Timer:NE555",
+      "footprint": "Package_DIP:DIP-8_W7.62mm",
+      "value": "NE555",
+      "description": "Single precision timer IC",
+      "x": 30,
+      "y": 25
+    },
+    {
+      "ref": "R1",
+      "symbol": "Device:R",
+      "footprint": "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal",
+      "value": "47k",
+      "description": "Resistor de temporización VCC → nodo DIS/THRS",
+      "x": 45,
+      "y": 15
+    },
+    {
+      "ref": "C1",
+      "symbol": "Device:C",
+      "footprint": "Capacitor_THT:CP_Radial_D5.0mm_P2.50mm",
+      "value": "10µF",
+      "description": "Capacitor de temporización electrolítico",
+      "x": 18,
+      "y": 38
+    },
+    {
+      "ref": "C2",
+      "symbol": "Device:C",
+      "footprint": "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm",
+      "value": "100nF",
+      "description": "Bypass en pin CV (pin 5)",
+      "x": 42,
+      "y": 38
+    },
+    {
+      "ref": "J1",
+      "symbol": "Connector:Conn_01x02_Pin",
+      "footprint": "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical",
+      "value": "PWR",
+      "description": "Alimentación: Pin1=VCC, Pin2=GND",
+      "x": 5,
+      "y": 25
+    },
+    {
+      "ref": "J2",
+      "symbol": "Connector:Conn_01x02_Pin",
+      "footprint": "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical",
+      "value": "TRIG-IN",
+      "description": "Disparo: Pin1=TRIG → U1-2; Pin2=GND",
+      "x": 5,
+      "y": 12
+    },
+    {
+      "ref": "J3",
+      "symbol": "Connector:Conn_01x02_Pin",
+      "footprint": "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical",
+      "value": "OUT",
+      "description": "Salida: Pin1=OUT, Pin2=GND",
+      "x": 55,
+      "y": 25
+    }
+  ],
+  "nets": [
+    {
+      "name": "VCC",
+      "pins": ["U1-8", "U1-4", "R1-1", "J1-1"],
+      "description": "Alimentación y RST activo alto"
+    },
+    {
+      "name": "GND",
+      "pins": ["U1-1", "C1-2", "C2-2", "J1-2", "J2-2", "J3-2"],
+      "description": "Tierra común"
+    },
+    {
+      "name": "Net-TRIG",
+      "pins": ["U1-2", "J2-1"],
+      "description": "Entrada de disparo (TRIG)"
+    },
+    {
+      "name": "Net-THRS",
+      "pins": ["U1-6", "U1-7", "R1-2", "C1-1"],
+      "description": "Nodo RC: DIS, THRS, R, C+"
+    },
+    {
+      "name": "Net-CV",
+      "pins": ["U1-5", "C2-1"],
+      "description": "Control voltage con bypass"
+    },
+    {
+      "name": "Net-OUT",
+      "pins": ["U1-3", "J3-1"],
+      "description": "Salida de pulso"
+    }
+  ],
+  "board_size_mm": { "width": 65, "height": 55 },
+  "pcb_variants": [
+    {
+      "name": "Doble Cara",
+      "description": "Pistas en F.Cu y B.Cu. El autorouter usa ambas capas y vías.",
+      "routing_layers": ["F.Cu", "B.Cu"],
+      "copper_pour": null,
+      "gerbers_zip": "doble_cara_gerbers.zip",
+      "image": "doble_cara.png"
+    },
+    {
+      "name": "Una Cara",
+      "description": "Pistas solo en F.Cu. Sin vías. Más fácil de fabricar artesanalmente.",
+      "routing_layers": ["F.Cu"],
+      "copper_pour": null,
+      "gerbers_zip": "una_cara_gerbers.zip",
+      "image": "una_cara.png"
+    },
+    {
+      "name": "Una Cara + Copper Pour GND",
+      "description": "F.Cu con vertido de cobre para tierra en todas las áreas libres.",
+      "routing_layers": ["F.Cu"],
+      "copper_pour": { "layer": "F.Cu", "net": "GND", "clearance": 0.3, "minWidth": 0.25 },
+      "gerbers_zip": "copper_pour_gerbers.zip",
+      "image": "copper_pour.png"
+    }
+  ]
+}

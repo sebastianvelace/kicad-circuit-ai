@@ -24,8 +24,24 @@ _CIRCUIT_KEYWORDS: dict[str, list[str]] = {
         "práctica 6", "practica 6", "practice 6",
     ],
     "555_monostable": [
-        "555 monostable", "555 monoestable", "monostable 555", "ne555 monostable",
-        "pulso único", "single pulse", "one-shot 555",
+        "555 monostable",
+        "555 monoestable",
+        "monostable 555",
+        "ne555 monostable",
+        "pulso único",
+        "single pulse",
+        "one-shot 555",
+        "timer monostable",
+        "temporizador monostable",
+    ],
+    "lm7805_psu": [
+        "lm7805",
+        "7805",
+        "fuente 5v",
+        "regulador 5v",
+        "5v power supply",
+        "regulador de voltaje",
+        "voltage regulator 5v",
     ],
 }
 
@@ -108,8 +124,8 @@ def get_pcb_workflow_recipe(circuit_type: str) -> str:
     """Return the pre-defined PCB workflow recipe for a known circuit type.
 
     Args:
-        circuit_type: One of "555_astable", "555_monostable".
-                      Use list form: "555 astable" also works.
+        circuit_type: One of "555_astable", "555_monostable", "lm7805_psu", etc.
+                      Spaces are normalized (e.g. "555 astable", "lm7805 psu").
 
     Returns:
         JSON string with the complete recipe, or an error message.

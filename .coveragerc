@@ -1,0 +1,6 @@
+[run]
+source = kicad_circuit_ai
+
+[report]
+# Target is 80%; raise fail_under as parser/server/schematic coverage grows
+fail_under = 50
