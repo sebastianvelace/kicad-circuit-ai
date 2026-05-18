@@ -47,6 +47,14 @@ This project **complements** existing KiCad MCP servers (like [mixelpixx/KiCAD-M
 
 ---
 
+## Image → working PCB flow
+
+For **non-experts**: use a vision-capable agent with the fixed JSON contract in [docs/image_to_recipe_prompt.md](docs/image_to_recipe_prompt.md), then either match a known recipe (`parse_circuit_from_description`) or build the schematic with your KiCad MCP server. Before fabrication, follow the ordered **release gate** in [docs/RELEASE_PLAYBOOK.md](docs/RELEASE_PLAYBOOK.md). Obtain a machine-readable checklist with the MCP tool `get_pcb_release_plan`.
+
+For **experts**: the same playbook applies to existing projects (semantic validate → ERC → DRC → DFM → export).
+
+---
+
 ## MCP Tools
 
 ### `validate_circuit_logic`

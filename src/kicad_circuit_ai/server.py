@@ -13,6 +13,7 @@ Tools:
   - copy_template_project: copy a template to a working directory
   - save_project_as_template: save a completed project as a template
   - generate_bom_from_recipe: BOM from recipe JSON (csv / json / markdown)
+  - get_pcb_release_plan: ordered dual-MCP checklist before fabrication
 """
 
 import os
@@ -108,6 +109,7 @@ def _create_server():
         get_pcb_workflow_recipe as _get_recipe,
     )
     from kicad_circuit_ai.tools.bom import generate_bom_from_recipe as _generate_bom
+    from kicad_circuit_ai.tools.release_plan import release_plan_json as _release_plan_json
     from kicad_circuit_ai.tools.template_manager import (
         copy_template_project as _copy_template,
         save_project_as_template as _save_template,
@@ -201,6 +203,31 @@ def _create_server():
             BOM text, or an error message if JSON is invalid.
         """
         return _generate_bom(recipe_json, output_format)
+
+    @mcp.tool()
+    def get_pcb_release_plan(
+        schematic_path: str = "",
+        board_path: str = "",
+        locale: str = "en",
+    ) -> str:
+        """Return an ordered JSON checklist for pre-Gerber validation (dual MCP).
+
+        Steps reference kicad-circuit-ai and KiCAD-MCP-Server tools: semantic
+        validation, ERC, DRC, DFM, optional BOM, export_gerber.
+
+        Args:
+            schematic_path: .kicad_sch or KiCad XML .net (optional).
+            board_path: .kicad_pcb for DFM (optional but recommended).
+            locale: ``en`` or ``es`` for validate_circuit_logic args.
+
+        Returns:
+            Compact JSON with ``steps`` in execution order.
+        """
+        return _release_plan_json(
+            schematic_path or None,
+            board_path or None,
+            locale=locale,
+        )
 
     @mcp.tool()
     def list_available_templates() -> str:
